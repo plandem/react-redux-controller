@@ -1,6 +1,7 @@
 ### Usage with decorators
 ```js
 import PropTypes from 'prop-types';
+import { createSelector } from 'reselect';
 import { expose, observable, computed, selector, controller } from 'react-redux-controller';
 import UserView from './components/user';
 
@@ -45,6 +46,7 @@ or
 
 ```js
 import PropTypes from 'prop-types';
+import { createSelector } from 'reselect';
 import { expose, observable, computed, selector, controller } from 'react-redux-controller';
 import UserView from './components/user';
 
@@ -96,6 +98,7 @@ export default UserController;
 ### Usage without decorators
 ```js
 import PropTypes from 'prop-types';
+import { createSelector } from 'reselect';
 import { selector, withController } from 'react-redux-controller';
 import UserView from './components/user';
 
