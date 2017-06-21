@@ -105,8 +105,8 @@ import { selector, withController } from 'react-redux-controller';
 import UserView from './components/user';
 
 class UserController {
-    users = [];
-    selectedUser = null;
+    get users() { return this.state.users || [] };
+    get selectedUser() { return this.state.hasOwnProperty('selectedUser') ? this.state.selectedUser : null };
 
     get currentUser() {
         return (this.selectedUser !== null) ? this.users[this.selectedUser] : null;

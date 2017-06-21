@@ -85,6 +85,10 @@ export function createController(ControllerClass, selectors) {
 			return;
 		}
 
+		if(typeof(props[propName].get) !== 'function') {
+			throw new Error('Properties must be declared as getter only.');
+		}
+
 		selectorPropTypes[propName] = propTypes[propName];
 		if(selectorPropNames[propName]) {
 			//property is a true selector, i.e. result is a function
