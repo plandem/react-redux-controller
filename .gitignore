@@ -1,2 +1,7 @@
-lib
-node_modules
+.idea/
+es/
+lib/
+dist/
+node_modules/
+yarn-error.log
+yarn.lock
