@@ -30,7 +30,8 @@ class UserController {
     }
 
     @expose onClick() {
-        return 'sync result';
+        const { dispatch } = this.props;
+        return dispatch({ type: 'click' });
     }
 
     @expose async onFetch() {
@@ -75,7 +76,8 @@ class UserController {
     }
 
     @expose onClick() {
-        return 'sync result';
+        const { dispatch } = this.props;
+        return dispatch({ type: 'click' });
     }
 
     @expose async onFetch() {
@@ -126,7 +128,8 @@ class UserController {
     }
 
     onClick() {
-        return 'sync result';
+        const { dispatch } = this.props;
+        return dispatch({ type: 'click' });
     }
 
     async onFetch() {
