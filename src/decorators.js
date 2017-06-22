@@ -20,6 +20,25 @@ function attachMetaInfo(metaKey, target, propertyKey, propertyInfo) {
 }
 
 /**
+ * helper to validate propertyType
+ * @param metaKey
+ * @param target
+ * @param propertyKey
+ * @param propType
+ */
+function attachPropType(metaKey, target, propertyKey, propType) {
+	if(propType && typeof(propType) !== 'function') {
+		throw new Error(`Invalid propType for property ${propertyKey}.`);
+	}
+
+	if(!(propType)) {
+		propType = PropTypes.any;
+	}
+
+	attachMetaInfo(metaKey, target, propertyKey, propType);
+}
+
+/**
  * test if object is a descriptor of property
  * @param obj
  * @returns {boolean}
@@ -63,10 +82,7 @@ export const observable = makePropertyDecorator((target, propertyKey, descriptor
 		return this.state.hasOwnProperty(propertyKey) ? this.state[propertyKey] : defaultValue();
 	};
 
-	if(propType && typeof(propType) === 'function') {
-		attachMetaInfo(propertyTypeMetaKey, target, propertyKey, propType);
-	}
-
+	attachPropType(propertyTypeMetaKey, target, propertyKey, propType);
 	return {
 		get,
 	};
@@ -85,10 +101,7 @@ export const computed = makePropertyDecorator((target, propertyKey, descriptor, 
 		throw new Error(`Computed property '${propertyKey}' can not have setter or value.`);
 	}
 
-	if(propType && typeof(propType) === 'function') {
-		attachMetaInfo(propertyTypeMetaKey, target, propertyKey, propType);
-	}
-
+	attachPropType(propertyTypeMetaKey, target, propertyKey, propType);
 	return descriptor;
 });
 
@@ -117,12 +130,12 @@ export const selector = makePropertyDecorator((target, propertyKey, descriptor, 
  */
 export const expose = makePropertyDecorator((target, propertyKey, descriptor, [propType]) => {
 	if(propType && typeof(propType) === 'function' && !(descriptor.set)) {
-		attachMetaInfo(propertyTypeMetaKey, target, propertyKey, propType);
+		attachPropType(propertyTypeMetaKey, target, propertyKey, propType);
 	} else {
 		if(!(propType) && (descriptor.value && typeof(descriptor.value) === 'function')) {
-			attachMetaInfo(propertyTypeMetaKey, target, propertyKey, PropTypes.func.isRequired);
+			attachPropType(propertyTypeMetaKey, target, propertyKey, PropTypes.func.isRequired);
 		} else {
-			throw new Error(`Can not get type of property for '${propertyKey}'.`);
+			throw new Error(`Can't get type of property for '${propertyKey}'.`);
 		}
 	}
 

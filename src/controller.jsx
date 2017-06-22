@@ -1,13 +1,33 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { createController } from './createController';
+import { reduxStateInjector } from './reduxStateInjector';
 
 function getDisplayName(WrappedComponent) {
 	return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 
-export function withController(ControllerClass, selectors) {
-	const { controller, selectorPropTypes, methodPropTypes, selectorMap, methodMap } = createController(ControllerClass, selectors);
+export function withController(ControllerClass, options) {
+	let selectors;
+	let stateInjector;
+
+	if(Array.isArray(options)) {
+			selectors = options;
+	}
+
+	if(typeof(options) === 'object') {
+		({ selectors, stateInjector } = options);
+	}
+
+	if(!(stateInjector)) {
+		stateInjector = reduxStateInjector;
+	}
+
+	if(typeof(stateInjector) !== 'function') {
+		throw new Error('Invalid type of stateInjector. It must be a function.');
+	}
+
+	const info = createController(ControllerClass, selectors);
+	const { controller, selectorPropTypes, methodPropTypes, selectorMap, methodMap } = info;
 
 	return (WrappedComponent) => {
 		class Controller extends React.Component {
@@ -24,7 +44,6 @@ export function withController(ControllerClass, selectors) {
 			}
 
 			getChildContext() {
-				// Pass only required of selector/controller props to context for descendant components
 				return Object.assign({ }, selectorMap, methodMap);
 			}
 
@@ -37,15 +56,8 @@ export function withController(ControllerClass, selectors) {
 
 		Controller.displayName = `Controller(${getDisplayName(WrappedComponent)})`;
 		Controller.propTypes = Object.assign({}, selectorPropTypes, (WrappedComponent.propTypes || {}));
-
-		// Declare the availability of all of the selectors and controller methods in the React context for descendant components.
 		Controller.childContextTypes = Object.assign({ }, selectorPropTypes, methodPropTypes);
 
-		const mapStateToProps = (state, props) => {
-			Object.assign(controller, { state, props });
-			return selectorMap;
-		};
-
-		return connect(mapStateToProps)(Controller);
+		return stateInjector(Controller, info);
 	}
 }

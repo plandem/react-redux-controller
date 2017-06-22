@@ -22,7 +22,7 @@ describe('createController', () => {
 		expect(() => { createController(
 			class UserController {
 				@observable selectedUser;
-			}) }).toThrowError();
+			}) }).not.toThrowError();
 
 		expect(() => { createController(
 			class UserController {
