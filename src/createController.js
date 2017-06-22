@@ -26,7 +26,7 @@ export function getAllProperties(obj) {
  * instantiate controller and return required objects for further usage
  * @param ControllerClass
  * @param selectors
- * @returns {{controller: *, selectorPropTypes, methodPropTypes, selectorMap, methodMap}}
+ * @returns {{controller: *, propTypes, selectorPropTypes, methodPropTypes, selectorMap, methodMap}}
  */
 export function createController(ControllerClass, selectors) {
 	const controller = new ControllerClass();
@@ -107,17 +107,11 @@ export function createController(ControllerClass, selectors) {
 		}
 	});
 
-	//attach 'props' property to controller for 'mapStateToProps'
-	Object.defineProperty(controller, 'props', {
-		writable: true,
-		enumerable: false,
-	});
-
-	//attach 'state' property to controller for 'mapStateToProps'
+	//attach non enumerable 'state' property to controller to use later for assignments
 	Object.defineProperty(controller, 'state', {
 		writable: true,
 		enumerable: false,
 	});
 
-	return { controller, selectorPropTypes, methodPropTypes, selectorMap, methodMap };
+	return { controller, propTypes, selectorPropTypes, methodPropTypes, selectorMap, methodMap };
 }

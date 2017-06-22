@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { createController } from './createController';
 import { reduxStateInjector } from './reduxStateInjector';
 
@@ -27,11 +28,19 @@ export function withController(ControllerClass, options) {
 	}
 
 	const info = createController(ControllerClass, selectors);
-	const { controller, selectorPropTypes, methodPropTypes, selectorMap, methodMap } = info;
+	const { controller, propTypes, selectorPropTypes } = info;
+	const propNames = Object.keys(propTypes);
 
 	return (WrappedComponent) => {
 		class Controller extends React.Component {
 			componentWillMount() {
+				if(!(controller.hasOwnProperty('props'))) {
+					Object.defineProperty(controller, 'props', {
+						get: () => this.props,
+						enumerable: false,
+					});
+				}
+
 				if (controller.initialize) {
 					controller.initialize();
 				}
@@ -44,7 +53,7 @@ export function withController(ControllerClass, options) {
 			}
 
 			getChildContext() {
-				return Object.assign({ }, selectorMap, methodMap);
+				return propNames.reduce((result, name) => ((result[name] = this.props[name]) && result), {});
 			}
 
 			render() {
@@ -56,7 +65,7 @@ export function withController(ControllerClass, options) {
 
 		Controller.displayName = `Controller(${getDisplayName(WrappedComponent)})`;
 		Controller.propTypes = Object.assign({}, selectorPropTypes, (WrappedComponent.propTypes || {}));
-		Controller.childContextTypes = Object.assign({ }, selectorPropTypes, methodPropTypes);
+		Controller.childContextTypes = propTypes;
 
 		return stateInjector(Controller, info);
 	}
