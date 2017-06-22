@@ -128,7 +128,7 @@ export const selector = makePropertyDecorator((target, propertyKey, descriptor, 
  */
 export const expose = makePropertyDecorator((target, propertyKey, descriptor, [propType]) => {
 	if((descriptor.value && typeof(descriptor.value) !== 'function') || descriptor.set) {
-		throw new Error(`'${propertyKey}' must be declared as getter or method. `);
+		throw new Error(`'${propertyKey}' must be declared as getter, property or method. `);
 	}
 
 	if(!propType) {

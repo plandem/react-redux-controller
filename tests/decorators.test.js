@@ -87,19 +87,7 @@ describe('Decorators', () => {
 		expect(userController.selectedUser).toEqual(-1);
 	});
 
-	it('@expose can be used without type only for methods', () => {
-		expect(() => { class UserController {
-			@expose selectedUser;
-		}}).toThrowError();
-
-		expect(() => { class UserController {
-			@expose() selectedUser;
-		}}).toThrowError();
-
-		expect(() => { class UserController {
-			@expose get currentUser() {}
-		}}).toThrowError();
-
+	it('@expose can be used for getters and methods only', () => {
 		expect(() => { class UserController {
 			@expose set currentUser(a) {}
 		}}).toThrowError();
@@ -107,6 +95,18 @@ describe('Decorators', () => {
 		expect(() => { class UserController {
 			@expose(PropTypes.number) set currentUser(a) {}
 		}}).toThrowError();
+
+		expect(() => { class UserController {
+			@expose selectedUser;
+		}}).not.toThrowError();
+
+		expect(() => { class UserController {
+			@expose() selectedUser;
+		}}).not.toThrowError();
+
+		expect(() => { class UserController {
+			@expose get currentUser() {}
+		}}).not.toThrowError();
 
 		expect(() => { class UserController {
 			@expose(PropTypes.number) selectedUser;
