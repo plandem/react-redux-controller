@@ -27,15 +27,13 @@ function attachMetaInfo(metaKey, target, propertyKey, propertyInfo) {
  * @param propType
  */
 function attachPropType(metaKey, target, propertyKey, propType) {
-	if(propType && typeof(propType) !== 'function') {
-		throw new Error(`Invalid propType for property ${propertyKey}.`);
-	}
+	if(propType) {
+		if(typeof(propType) !== 'function') {
+			throw new Error(`Invalid propType (${propType}) for property ${propertyKey}.`);
+		}
 
-	if(!(propType)) {
-		propType = PropTypes.any;
+		attachMetaInfo(metaKey, target, propertyKey, propType);
 	}
-
-	attachMetaInfo(metaKey, target, propertyKey, propType);
 }
 
 /**
@@ -129,15 +127,17 @@ export const selector = makePropertyDecorator((target, propertyKey, descriptor, 
  * @type {Function}
  */
 export const expose = makePropertyDecorator((target, propertyKey, descriptor, [propType]) => {
-	if(propType && typeof(propType) === 'function' && !(descriptor.set)) {
-		attachPropType(propertyTypeMetaKey, target, propertyKey, propType);
-	} else {
-		if(!(propType) && (descriptor.value && typeof(descriptor.value) === 'function')) {
-			attachPropType(propertyTypeMetaKey, target, propertyKey, PropTypes.func.isRequired);
-		} else {
-			throw new Error(`Can't get type of property for '${propertyKey}'.`);
-		}
+	if((descriptor.value && typeof(descriptor.value) !== 'function') || descriptor.set) {
+		throw new Error(`'${propertyKey}' must be declared as getter or method. `);
 	}
+
+	if(!propType) {
+		propType = (descriptor.value && typeof(descriptor.value) === 'function')
+			? PropTypes.func.isRequired
+			: PropTypes.any.isRequired;
+	}
+
+	attachPropType(propertyTypeMetaKey, target, propertyKey, propType);
 
 	return descriptor;
 });
