@@ -9,7 +9,6 @@ export function reduxStateInjector(Controller, info) {
 	const mapStateToProps = (state) => {
 		info.controller.state = state;
 		return info.selectorMap;
-		// return Object.assign({ }, info.selectorMap);
 	};
 
 	return connect(mapStateToProps)(Controller);
